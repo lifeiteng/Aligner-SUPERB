@@ -19,18 +19,18 @@ Aligner-SUPERB is a comprehensive benchmark designed to evaluate **Speech-to-tex
 Aligner-SUPERB is a new benchmark in evaluating Speech-to-text forced alignment models. Our goal is to set the standard for evaluating speech-to-text forced alignment.
 
 ## Metrics
-* $define\, |U| := number\,of\,utterances,\,\, |utt| := number\,words\,of\,the\,utterance$
+* $`define\, |U| := number\,of\,utterances,\,\, |utt| := number\,words\,of\,the\,utterance`$
 
 * **Word Boundary Error (WBE)**
     * measure how close the predicted and manually labeled timestamps are
-    * $WBE\_{Start} = \frac{1}{|U|}\sum_{utt}^{|U|} \frac{1}{|utt|}\sum_{w \in utt}|w^{ref}_{start} - w^{align}_{start}|$
-    * $WBE\_{End} \,\, = \frac{1}{|U|}\sum_{utt}^{|U|} \frac{1}{|utt|}\sum_{w \in utt}|w^{ref}_{end} - w^{align}_{end}|$
-    * $WBE \,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, = \frac{1}{|U|}\sum_{utt}^{|U|} \frac{1}{|utt|}\sum_{w \in utt} \frac{1}{2}(|w^{ref}_{start} - w^{align}_{start}| + |w^{ref}_{end} - w^{align}_{end}|)$
+    * $`WBE\_{Start} = \frac{1}{|U|} \sum\limits_{utt}^{|U|} \frac{1}{|utt|}\sum\limits_{w \in utt}|w^{ref}_{start} - w^{align}_{start}|`$
+    * $`WBE\_{End} \,\, = \frac{1}{|U|}\sum\limits_{utt}^{|U|} \frac{1}{|utt|}\sum\limits_{w \in utt}|w^{ref}_{end} - w^{align}_{end}|`$
+    * $`WBE \,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, = \frac{1}{|U|}\sum\limits_{utt}^{|U|} \frac{1}{|utt|}\sum\limits_{w \in utt} \frac{1}{2}(|w^{ref}_{start} - w^{align}_{start}| + |w^{ref}_{end} - w^{align}_{end}|)`$
 * **Utterance Boundary Error(UBE)**
     * `UBE_Start` means the timestamp of the start of an utterance by a aligner system is later than the actual time.
-        * $UBE\_{Start} = \frac{1}{|U|}\sum_{utt}^{|U|} (utt^{ref}_{start} < utt^{align}_{start})\,?\,1\,:\,0$
+        * $`UBE\_{Start} = \frac{1}{|U|}\sum\limits_{utt}^{|U|} (utt^{ref}_{start} < utt^{align}_{start})\,?\,1\,:\,0`$
     * `UBE_End` means the timestamp of the end of an utterance by a aligner system is earlier than the actual time.
-        * $UBE\_{End} = \frac{1}{|U|}\sum_{utt}^{|U|} (utt^{ref}_{end} > utt^{align}_{end})\,?\,1\,:\,0$
+        * $`UBE\_{End} = \frac{1}{|U|}\sum\limits_{utt}^{|U|} (utt^{ref}_{end} > utt^{align}_{end})\,?\,1\,:\,0`$
 
 #### Dataset TIMIT DEV part
 - install aligners first [Installation](#installation)
