@@ -51,3 +51,7 @@ for sub in ["DEV"]:
         tg.addTier(segmentTier)
         tg.addTier(wordTier)
         tg.save(output_file, format="long_textgrid", includeBlankSpaces=True)
+
+        # .txt file  will be used in MFA
+        with open(f"{TGTDIR}/{sub}_{cut.id}.txt", "w") as f:
+            f.write(f"{''.join([w[-1] for w in words])}\n")

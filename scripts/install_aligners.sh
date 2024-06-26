@@ -1,5 +1,8 @@
 
 ## install MFA
+## https://montreal-forced-aligner.readthedocs.io/en/latest/installation.html
+conda create -n aligner -c conda-forge montreal-forced-aligner
+conda config --add channels conda-forge
 
 ## install NFA
 git clone https://github.com/lifeiteng/NeMo.git third_party/NeMo

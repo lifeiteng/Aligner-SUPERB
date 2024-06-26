@@ -22,8 +22,8 @@ fi
 
 if [ $stage -le 1 ]; then
     log "Stage 1: Prepare Target TextGrid files"
-    mkdir -p alignments/TIMIT_TGT_TARGET
-    python scripts/covert_lhotse_to_tgt.py `pwd` alignments/TIMIT_TGT_TARGET
+    mkdir -p alignments/TIMIT_TARGET_DEV
+    python scripts/covert_lhotse_to_tgt.py `pwd` alignments/TIMIT_TARGET_DEV
 fi
 
 if [ $stage -le 2 ]; then
@@ -61,11 +61,31 @@ for sub in ['DEV']:
         meta.append({'audio_filepath': audio_filepath, 'text': text})
 
     write_manifest(f'manifests/timit/NFA_{sub}_manifest_with_text.json', meta)
-" `pwd` `pwd`/alignments/TIMIT_TGT_TARGET
+" `pwd` `pwd`/alignments/TIMIT_TARGET_DEV
 fi
 
 if [ $stage -le 3 ]; then
-    log "Stage 3: Generate NFA TextGrid files"
+    log "Stage 3: Generate MFA TextGrid files"
+
+    # conda activate aligner
+    conda activate aligner
+
+    export MFA_ROOT_DIR=~/Documents/MFA
+    mfa model download acoustic english_us_arpa
+    mfa model download dictionary english_us_arpa
+
+    # for sub in DEV TEST TRAIN;do
+    for sub in DEV;do
+        mkdir -p alignments/TIMIT_MFA_${sub}
+        # 下载测试数据
+        # https://montreal-forced-aligner.readthedocs.io/en/latest/first_steps/example.html#alignment-example
+        mfa align --clean TIMIT_TARGET_${sub} english_us_arpa alignments/TIMIT_MFA_${sub}
+    done
+    conda deactivate
+fi
+
+if [ $stage -le 4 ]; then
+    log "Stage 4: Generate NFA TextGrid files"
 
     NFA_DIR=third_party/NeMo
     # for sub in DEV TEST TRAIN;do
@@ -79,15 +99,20 @@ if [ $stage -le 3 ]; then
     done
 fi
 
-log "Stage 4: Evalute NFA"
-if [ ! -d "alignments/TIMIT_TGT_TARGET" ]; then
+log "Stage 5: Evalute NFA"
+if [ ! -d "alignments/TIMIT_TARGET_DEV" ]; then
     log "Target TextGrid not found. Please run stage 2 first"
     exit 1
 fi
 
-if [ ! -d "alignments/TIMIT_NFA_DEV" ]; then
-    log "NFA alignment not found. Please run stage 3 first"
+if [ ! -d "alignments/TIMIT_MFA_DEV" ]; then
+    log "MFA alignment not found. Please run stage 3 first"
     exit 1
 fi
 
-alignersuperb metrics -t alignments/TIMIT_TGT_TARGET alignments/TIMIT_NFA_DEV
+if [ ! -d "alignments/TIMIT_NFA_DEV" ]; then
+    log "NFA alignment not found. Please run stage 4 first"
+    exit 1
+fi
+
+alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_NFA_DEV
