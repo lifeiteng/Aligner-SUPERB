@@ -1,20 +1,34 @@
+stage=-1
 
-echo "Stage 0: Download & Prepare TIMIT"
-lhotse download timit datasets
-lhotse prepare timit datasets/timit manifests/timit
+. scripts/parse_options.sh || exit 1
 
-for sub in DEV TEST TRAIN;do
-    lhotse cut simple --recording-manifest manifests/timit/timit_recordings_${sub}.jsonl.gz \
-        --supervision-manifest manifests/timit/timit_supervisions_${sub}.jsonl.gz \
-        manifests/timit/timit_cuts_${sub}.jsonl.gz
-done
+log() {
+  # This function is from espnet
+  local fname=${BASH_SOURCE[1]##*/}
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') (${fname}:${BASH_LINENO[0]}:${FUNCNAME[1]}) $*"
+}
 
-echo "Stage 1: Prepare Target TextGrid files"
-mkdir -p alignments/TIMIT_TGT_TARGET
-python scripts/covert_lhotse_to_tgt.py `pwd` alignments/TIMIT_TGT_TARGET
+if [ $stage -le 0 ]; then
+    log "Stage 0: Download & Prepare TIMIT"
+    lhotse download timit datasets
+    lhotse prepare timit datasets/timit manifests/timit
 
-echo "Stage 2: Prepare NFA json files"
-python -c"
+    for sub in DEV TEST TRAIN;do
+        lhotse cut simple --recording-manifest manifests/timit/timit_recordings_${sub}.jsonl.gz \
+            --supervision-manifest manifests/timit/timit_supervisions_${sub}.jsonl.gz \
+            manifests/timit/timit_cuts_${sub}.jsonl.gz
+    done
+fi
+
+if [ $stage -le 1 ]; then
+    log "Stage 1: Prepare Target TextGrid files"
+    mkdir -p alignments/TIMIT_TGT_TARGET
+    python scripts/covert_lhotse_to_tgt.py `pwd` alignments/TIMIT_TGT_TARGET
+fi
+
+if [ $stage -le 2 ]; then
+    log "Stage 2: Prepare NFA json files"
+    python -c"
 import os
 import sys
 from pathlib import Path
@@ -48,19 +62,32 @@ for sub in ['DEV']:
 
     write_manifest(f'manifests/timit/NFA_{sub}_manifest_with_text.json', meta)
 " `pwd` `pwd`/alignments/TIMIT_TGT_TARGET
+fi
 
-echo "Stage 3: Generate NFA TextGrid files"
+if [ $stage -le 3 ]; then
+    log "Stage 3: Generate NFA TextGrid files"
 
-NFA_DIR=/Users/feiteng/NVIDIA/NeMo
-# for sub in DEV TEST TRAIN;do
-for sub in DEV;do
-    python ${NFA_DIR}/tools/nemo_forced_aligner/align.py \
-        additional_segment_grouping_separator="|" \
-        "save_output_file_formats=['tgt']" \
-        pretrained_name="stt_en_fastconformer_hybrid_large_pc" \
-        manifest_filepath=manifests/timit/NFA_${sub}_manifest_with_text.json \
-        output_dir=alignments/TIMIT_NFA_${sub}
-done
+    NFA_DIR=third_party/NeMo
+    # for sub in DEV TEST TRAIN;do
+    for sub in DEV;do
+        python ${NFA_DIR}/tools/nemo_forced_aligner/align.py \
+            additional_segment_grouping_separator="|" \
+            "save_output_file_formats=['tgt']" \
+            pretrained_name="stt_en_fastconformer_hybrid_large_pc" \
+            manifest_filepath=manifests/timit/NFA_${sub}_manifest_with_text.json \
+            output_dir=alignments/TIMIT_NFA_${sub}
+    done
+fi
 
-echo "Stage 4: Evalute NFA"
+log "Stage 4: Evalute NFA"
+if [ ! -d "alignments/TIMIT_TGT_TARGET" ]; then
+    log "Target TextGrid not found. Please run stage 2 first"
+    exit 1
+fi
+
+if [ ! -d "alignments/TIMIT_NFA_DEV" ]; then
+    log "NFA alignment not found. Please run stage 3 first"
+    exit 1
+fi
+
 alignersuperb metrics -t alignments/TIMIT_TGT_TARGET alignments/TIMIT_NFA_DEV

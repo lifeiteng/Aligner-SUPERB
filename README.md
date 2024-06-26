@@ -36,7 +36,7 @@ Aligner-SUPERB is a new benchmark in evaluating Speech-to-text forced alignment 
 - install aligners first [Installation](#installation)
 
 ```
-bash scripts/eval_timit.sh
+bash scripts/eval_timit.sh --stage -1
 ```
 
 |                  | WBE ⬇️   | WBE_Start ⬇️  | WBE_End ⬇️  | UBE_Start ⬇️  | UBE_End ⬇️  |

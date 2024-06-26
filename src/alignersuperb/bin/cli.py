@@ -42,7 +42,7 @@ def metrics(
     keep = []
     for key in align_files.keys():
         if key not in target_files:
-            logging.warn(f"Missing target file for {key}")
+            # logging.warn(f"Missing target file for {key}")
             continue
         keep.append(key)
 
