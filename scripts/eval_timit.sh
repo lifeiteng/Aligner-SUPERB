@@ -14,8 +14,6 @@ mkdir -p alignments/TIMIT_TGT_TARGET
 python scripts/covert_lhotse_to_tgt.py `pwd` alignments/TIMIT_TGT_TARGET
 
 echo "Stage 2: Prepare NFA json files"
-
-mkdir -p alignments/NFA_AUDIO_SoftLink
 python -c"
 import os
 import sys
@@ -40,19 +38,16 @@ for sub in ['DEV']:
     cuts = load_manifest(f'manifests/timit/timit_cuts_{sub}.jsonl.gz')
 
     meta = []
-    for cut in cuts[:10]:
+    for cut in cuts:
         # text = '|'.join([s.text for s in cut.supervisions])
         text = '|'.join([get_supervision_text(s) for s in cut.supervisions])
 
         audio_filepath = f'{LINKDIR}/{sub}_{cut.id}.wav'
-        if Path(audio_filepath).exists():
-            os.remove(audio_filepath)
-        os.symlink(f'{DIR}/{get_source_file(cut)}', audio_filepath)
-
+        assert Path(audio_filepath).exists(), f'File {audio_filepath} does not exist'
         meta.append({'audio_filepath': audio_filepath, 'text': text})
 
     write_manifest(f'manifests/timit/NFA_{sub}_manifest_with_text.json', meta)
-" `pwd` `pwd`/alignments/NFA_AUDIO_SoftLink
+" `pwd` `pwd`/alignments/TIMIT_TGT_TARGET
 
 echo "Stage 3: Generate NFA TextGrid files"
 
@@ -61,11 +56,11 @@ NFA_DIR=/Users/feiteng/NVIDIA/NeMo
 for sub in DEV;do
     python ${NFA_DIR}/tools/nemo_forced_aligner/align.py \
         additional_segment_grouping_separator="|" \
-        "save_output_file_formats=['ass', tgt']" \
+        "save_output_file_formats=['tgt']" \
         pretrained_name="stt_en_fastconformer_hybrid_large_pc" \
         manifest_filepath=manifests/timit/NFA_${sub}_manifest_with_text.json \
         output_dir=alignments/TIMIT_NFA_${sub}
 done
 
 echo "Stage 4: Evalute NFA"
-alignersuperb eval alignments/TIMIT_TGT_TARGET alignments/TIMIT_NFA_DEV
+alignersuperb metrics -t alignments/TIMIT_TGT_TARGET alignments/TIMIT_NFA_DEV

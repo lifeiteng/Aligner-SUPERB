@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="Aligner-SUPERB",
-    version="0.1.4",
+    version="0.2.0",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     package_data={"": []},
@@ -18,9 +18,7 @@ setup(
         "praatio",
     ],
     entry_points={
-        "console_scripts": [
-            "alignersuperb=alignersuperb.bin:run"
-        ],
+        "console_scripts": ["alignersuperb=alignersuperb.bin:run"],
     },
     include_package_data=True,
 )

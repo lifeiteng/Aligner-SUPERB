@@ -3,6 +3,7 @@ show-source=true
 statistics=true
 max-line-length = 120
 per-file-ignores =
+  src/alignersuperb/metrics/*.py: E501
 
 exclude =
   .git,

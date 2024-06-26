@@ -1,13 +1,19 @@
 import logging
 
 import click
-from lhotse.utils import fix_random_seed
-from lhotse.utils import Pathlike
+from lhotse.utils import Pathlike, fix_random_seed
+
+from alignersuperb.metrics import UtteranceBoundaryError, WordBoundaryError
+from alignersuperb.utils import find_files, map_files, parse_textgrid
+
+formatter = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
+logging.basicConfig(format=formatter, level=logging.WARNING)
 
 
 @click.group()
 def cli():
-    pass
+    fix_random_seed(0)
+
 
 @cli.group()
 def run():
@@ -15,29 +21,46 @@ def run():
 
 
 @run.command()
-@click.argument("align_path", type=click.Path(allow_dash=True))
+@click.argument("align_path", type=click.Path(allow_dash=True, dir_okay=True, file_okay=False))
 @click.option(
     "-t",
     "--target-path",
-    type=click.Path(exists=True, dir_okay=False),
+    type=click.Path(exists=True, dir_okay=True, file_okay=False),
     help="Path to the target textgrid files.",
 )
-@click.option(
-    "--force-segment",
-    is_flag=True,
-    help="Force keep original text segment, only update(re-align) the timestamp.",
-)
-def eval(
-    align_path: Pathlike,
+def metrics(
     target_path: Pathlike,
-    force_segment: bool,
+    align_path: Pathlike,
 ):
     """
     Eval forced alignment metrics.
-
-    .. hint::
-        ``--force-segment`` must be used when you don't re-segment the text.
     """
-    logging.info(f"TODO")
+    target_files = map_files(find_files(target_path, extension=".TextGrid"))
+    align_files = map_files(find_files(align_path, extension=".TextGrid"))
+
+    # filter out missing target files
+    keep = []
+    for key in align_files.keys():
+        if key not in target_files:
+            logging.warn(f"Missing target file for {key}")
+            continue
+        keep.append(key)
+
+    logging.info(f"TARGET {len(target_files)} files, ALIGN {len(align_files)} files, keep {len(keep)} files.")
+
+    target_files = {k: v for k, v in target_files.items() if k in keep}
+    align_files = {k: v for k, v in align_files.items() if k in keep}
+
+    target_files = parse_textgrid(target_files)
+    align_files = parse_textgrid(align_files)
+
+    metrics_fn = [WordBoundaryError(), UtteranceBoundaryError()]
+
+    for fn in metrics_fn:
+        v = fn(target_files, align_files)
+        print(f"{v}")
 
 
+# if __name__ == "__main__":
+#     import sys
+#     metrics(sys.argv[1], sys.argv[2])
