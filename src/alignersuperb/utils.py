@@ -41,3 +41,24 @@ def parse_textgrid(files_map: Dict[str, str]) -> Dict[str, str]:
     for name, file_path in files_map.items():
         ttg[name] = textgrid.openTextgrid(file_path, includeEmptyIntervals=False)
     return ttg
+
+
+def print_table(myDict, col_list=None, aligner_name=None):
+    """Pretty print dictionary."""
+    if not col_list:
+        col_list = sorted(list(myDict.keys() if myDict else []))
+    myList = [col_list]  # 1st row = header
+
+    myList.append([str(myDict[col] if myDict[col] is not None else "")[:8] for col in col_list])
+
+    if aligner_name is not None:
+        myList[0].insert(0, "ForcedAligner")
+        for i in range(1, len(myList)):
+            myList[i].insert(0, aligner_name)
+
+    colSize = [max(map(len, col)) for col in zip(*myList)]
+    formatStr = " | ".join(["{{:<{}}}".format(i) for i in colSize])
+    myList.insert(1, ["-" * i for i in colSize])  # Seperating line
+    for item in myList:
+        print(formatStr.format(*item), flush=True)
+    print("\n", flush=True)

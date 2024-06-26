@@ -4,7 +4,7 @@ import click
 from lhotse.utils import Pathlike, fix_random_seed
 
 from alignersuperb.metrics import UtteranceBoundaryError, WordBoundaryError
-from alignersuperb.utils import find_files, map_files, parse_textgrid
+from alignersuperb.utils import find_files, map_files, parse_textgrid, print_table
 
 formatter = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
 logging.basicConfig(format=formatter, level=logging.WARNING)
@@ -56,9 +56,15 @@ def metrics(
 
     metrics_fn = [WordBoundaryError(), UtteranceBoundaryError()]
 
+    table = {}
     for fn in metrics_fn:
         v = fn(target_files, align_files)
-        print(f"{v}")
+        table.update(v)
+    print_table(
+        table,
+        col_list=["UBE_Start", "UBE_End", "WBE", "WBE_Start", "WBE_End", "Num UTTerances"],
+        aligner_name=str(align_path).split("/")[-1],
+    )
 
 
 # if __name__ == "__main__":

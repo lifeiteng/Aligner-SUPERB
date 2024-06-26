@@ -67,20 +67,20 @@ fi
 if [ $stage -le 3 ]; then
     log "Stage 3: Generate MFA TextGrid files"
 
-    # conda activate aligner
-    conda activate aligner
+    conda init
+    conda activate aligner || exit 1
 
+    # https://montreal-forced-aligner.readthedocs.io/en/latest/first_steps/example.html#alignment-example
     export MFA_ROOT_DIR=~/Documents/MFA
     mfa model download acoustic english_us_arpa
     mfa model download dictionary english_us_arpa
 
     # for sub in DEV TEST TRAIN;do
     for sub in DEV;do
-        mkdir -p alignments/TIMIT_MFA_${sub}
-        # 下载测试数据
-        # https://montreal-forced-aligner.readthedocs.io/en/latest/first_steps/example.html#alignment-example
-        mfa align --clean TIMIT_TARGET_${sub} english_us_arpa alignments/TIMIT_MFA_${sub}
+        # --single_speaker skip fMLLR for speaker adaptation
+        mfa align --single_speaker --clean alignments/TIMIT_TARGET_${sub} english_us_arpa english_us_arpa alignments/TIMIT_MFA_${sub} || exit 1
     done
+    # cp alignments/TIMIT_TARGET_${sub}/*.wav alignments/TIMIT_MFA_${sub}
     conda deactivate
 fi
 
@@ -115,4 +115,5 @@ if [ ! -d "alignments/TIMIT_NFA_DEV" ]; then
     exit 1
 fi
 
+alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_MFA_DEV
 alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_NFA_DEV

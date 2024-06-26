@@ -54,4 +54,4 @@ for sub in ["DEV"]:
 
         # .txt file  will be used in MFA
         with open(f"{TGTDIR}/{sub}_{cut.id}.txt", "w") as f:
-            f.write(f"{''.join([w[-1] for w in words])}\n")
+            f.write(f"{' '.join([w[-1] for w in words])}\n")
