@@ -35,6 +35,15 @@ def metrics(
     """
     Eval forced alignment metrics.
     """
+    return _metrics(target_path, align_path)
+
+def _metrics(
+    target_path: Pathlike,
+    align_path: Pathlike,
+):
+    """
+    Eval forced alignment metrics.
+    """
     target_files = map_files(find_files(target_path, extension=".TextGrid"))
     align_files = map_files(find_files(align_path, extension=".TextGrid"))
 
@@ -67,6 +76,6 @@ def metrics(
     )
 
 
-# if __name__ == "__main__":
-#     import sys
-#     metrics(sys.argv[1], sys.argv[2])
+if __name__ == "__main__":
+    import sys
+    _metrics(sys.argv[1], sys.argv[2])

@@ -99,7 +99,18 @@ if [ $stage -le 4 ]; then
     done
 fi
 
-log "Stage 5: Evalute NFA"
+if [ $stage -le 4 ]; then
+    log "Stage 5: Generate ctc-forced-aligner TextGrid files"
+
+    # for sub in DEV TEST TRAIN;do
+    for sub in DEV;do
+        python scripts/ctc_forced_aligner.py --language "eng" \
+            --manifest_filepath manifests/timit/NFA_${sub}_manifest_with_text.json \
+            --output_dir alignments/TIMIT_CtcFA_${sub}
+    done
+fi
+
+log "Stage 7: Evalute NFA"
 if [ ! -d "alignments/TIMIT_TARGET_DEV" ]; then
     log "Target TextGrid not found. Please run stage 2 first"
     exit 1
@@ -117,3 +128,4 @@ fi
 
 alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_MFA_DEV
 alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_NFA_DEV
+alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_CtcFA_DEV

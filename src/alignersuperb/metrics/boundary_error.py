@@ -68,8 +68,8 @@ class UtteranceBoundaryError(Metric):
 
             # start
             for word_target, word_align in zip(tg_target.getTier("words"), tg_align.getTier("words")):
-                if not word_target.label:  # skip empty
-                    continue
+                if not word_target.label:
+                    raise ValueError(f"Empty word: {word_target}")
                 assert word_target.label == word_align.label, f"Word mismatch: {word_target.label}, {word_align.label}"
                 total_ube_start.append(int(word_target.start < word_align.start))
                 break
@@ -77,7 +77,7 @@ class UtteranceBoundaryError(Metric):
             # end
             for word_target, word_align in zip(tg_target.getTier("words").entries[::-1], tg_align.getTier("words").entries[::-1]):
                 if not word_target.label:  # skip empty
-                    continue
+                    raise ValueError(f"Empty word: {word_target}")
                 assert word_target.label == word_align.label, f"Word mismatch: {word_target.label}, {word_align.label}"
                 total_ube_end.append(int(word_target.end > word_align.end))
                 break

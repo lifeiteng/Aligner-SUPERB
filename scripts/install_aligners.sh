@@ -19,3 +19,10 @@ pip install -e .
 cd -
 
 ## install ctc-forced-aligner
+git clone git+https://github.com/MahmoudAshraf97/ctc-forced-aligner.git third_party/ctc-forced-aligner
+cd third_party/ctc-forced-aligner
+git reset --hard eb8a750b9c91c3d2e2fda29264c82e252d84c3df
+
+pip install -e .
+cd -
+

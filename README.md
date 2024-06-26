@@ -42,8 +42,9 @@ bash scripts/eval_timit.sh --stage -1
 |                  | UBE_Start ⬇️  | UBE_End ⬇️  | WBE ⬇️   | WBE_Start ⬇️  | WBE_End ⬇️  | Num UTTerances |
 | ---------------- | -------- | --------     | --------    |    --------   | --------   | --------    |
 | Ground Truth     |  0       | 0            | 0           | 0             | 0          |             |
-| **Montreal FA(MFA)** | 4%        | 25%     | 18 ms       | 17 ms         | 19 ms   | 433        |
-| **Nemo FA(NFA)**     | 37%       | 69%     | 77 ms       | 78 ms         | 77 ms       | 433        |
+| **Montreal FA(MFA)** | 4%        | 25%     | 18 ms       | 17 ms         | 19 ms      | 433        |
+| **Nemo FA(NFA)**     | 37%       | 69%     | 77 ms       | 78 ms         | 77 ms      | 433        |
+| **ctc-forced-aligner** | 46%     | 94%     | 27 ms       | 26 ms         | 29 ms      | 433        |
 
 #### Buckeye
 * TODO
