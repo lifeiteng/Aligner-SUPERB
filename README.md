@@ -39,13 +39,17 @@ Aligner-SUPERB is a new benchmark in evaluating Speech-to-text forced alignment 
 bash scripts/eval_timit.sh --stage -1
 ```
 
-|                  | UBE_Start ⬇️  | UBE_End ⬇️  | WBE ⬇️   | WBE_Start ⬇️  | WBE_End ⬇️  | Num UTTerances |
-| ---------------- | -------- | --------     | --------    |    --------   | --------   | --------    |
-| Ground Truth     |  0       | 0            | 0           | 0             | 0          |             |
-| **Montreal FA(MFA)** | 4%        | 25%     | 18 ms       | 17 ms         | 19 ms      | 433        |
-| **Nemo FA(NFA)**     | 37%       | 69%     | 77 ms       | 78 ms         | 77 ms      | 433        |
-| **ctc-forced-aligner** | 46%     | 94%     | 27 ms       | 26 ms         | 29 ms      | 433        |
-| **WhisperX aligner**  | 73%       | 95%    | 46 ms       | 59 ms         | 33 ms      | 433        |
+|                      | UBE_Start ⬇️  | UBE_End ⬇️  | WBE ⬇️   | WBE_Start ⬇️  | WBE_End ⬇️  | Num UTTerances |
+| ----------------     | -------- | --------     | --------    |    --------   | --------   | --------    |
+| Ground Truth         |  0       | 0            | 0           | 0             | 0          |             |
+| **Montreal FA(MFA)** | 4%        | 25%         | 18 ms       | 17 ms         | 19 ms      | 433        |
+| **Nemo FA(NFA)**     | 37%       | 69%         | 77 ms       | 78 ms         | 77 ms      | 433        |
+| **ctc-forced-aligner** | 46%     | 94%         | 27 ms       | 26 ms         | 29 ms      | 433        |
+| **WhisperX aligner**  | 73%      | 95%         | 46 ms       | 59 ms         | 33 ms      | 433        |
+| **Lhotse MMSForcedAligner** |  48% | 82%        | 36 ms      | 42 ms         | 31 ms      | 433       |
+| **Lhotse ASRForcedAligner** |  73% | 95%         | 46 ms     | 59 ms         | 33 ms       | 433      |
+
+* Lhotse ASRForcedAligner and WhisperX both use CTC model `WAV2VEC2_ASR_BASE_960H`
 
 #### Buckeye
 * TODO
@@ -71,8 +75,8 @@ git clone https://github.com/lifeiteng/Aligner-SUPERB.git
 cd Aligner-SUPERB
 
 # create venv
-python3 -m venv .venv 
-source .venv/bin/activate 
+python3 -m venv .venv
+source .venv/bin/activate
 
 # Install Aligners
 bash scripts/install_aligners.sh
@@ -100,4 +104,4 @@ enhancing the benchmarking framework.
 ## Forced-Aligners
 - **Montreal Forced Aligner (MFA)** [https://github.com/MontrealCorpusTools/Montreal-Forced-Aligner](https://github.com/MontrealCorpusTools/Montreal-Forced-Aligner)
 - **NeMo/NVIDIA Forced Aligner (NFA)** [https://github.com/NVIDIA/NeMo/tree/main/tools/nemo_forced_aligner](https://github.com/NVIDIA/NeMo/tree/main/tools/nemo_forced_aligner)
-- 
+-

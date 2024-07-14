@@ -122,7 +122,25 @@ if [ $stage -le 6 ]; then
     done
 fi
 
-log "Stage 7: Evalute NFA"
+if [ $stage -le 7 ]; then
+    log "Stage 7: Generate whisperx TextGrid files"
+
+    # for sub in DEV TEST TRAIN;do
+    for sub in DEV;do
+        python scripts/lhotse_aligner_cli.py --language "en" \
+            --manifest_filepath manifests/timit/NFA_${sub}_manifest_with_text.json \
+            --aligner "MMSForcedAligner" \
+            --output_dir alignments/TIMIT_LhotseMMSForcedAligner_${sub}
+
+        python scripts/lhotse_aligner_cli.py --language "en" \
+            --manifest_filepath manifests/timit/NFA_${sub}_manifest_with_text.json \
+            --aligner "ASRForcedAligner" \
+            --output_dir alignments/TIMIT_LhotseASRForcedAligner_${sub}
+    done
+fi
+
+
+log "Stage 8: Evalute NFA"
 if [ ! -d "alignments/TIMIT_TARGET_DEV" ]; then
     log "Target TextGrid not found. Please run stage 2 first"
     exit 1
@@ -142,3 +160,5 @@ alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_MFA_DEV
 alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_NFA_DEV
 alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_CtcFA_DEV
 alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_WhisperxCtcFA_DEV
+alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_LhotseASRForcedAligner_DEV
+alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_LhotseMMSForcedAligner_DEV

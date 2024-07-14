@@ -29,3 +29,6 @@ cd -
 
 ## whisperx
 pip install git+https://github.com/m-bain/whisperx.git
+
+## lhotse
+pip install lhotse
