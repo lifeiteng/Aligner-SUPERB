@@ -45,6 +45,7 @@ bash scripts/eval_timit.sh --stage -1
 | **Montreal FA(MFA)** | 4%        | 25%     | 18 ms       | 17 ms         | 19 ms      | 433        |
 | **Nemo FA(NFA)**     | 37%       | 69%     | 77 ms       | 78 ms         | 77 ms      | 433        |
 | **ctc-forced-aligner** | 46%     | 94%     | 27 ms       | 26 ms         | 29 ms      | 433        |
+| **WhisperX aligner**  | 73%       | 95%    | 46 ms       | 59 ms         | 33 ms      | 433        |
 
 #### Buckeye
 * TODO

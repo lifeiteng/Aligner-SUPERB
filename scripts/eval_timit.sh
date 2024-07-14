@@ -99,14 +99,26 @@ if [ $stage -le 4 ]; then
     done
 fi
 
-if [ $stage -le 4 ]; then
+if [ $stage -le 5 ]; then
     log "Stage 5: Generate ctc-forced-aligner TextGrid files"
 
     # for sub in DEV TEST TRAIN;do
     for sub in DEV;do
-        python scripts/ctc_forced_aligner.py --language "eng" \
+        python scripts/ctc_forced_aligner_cli.py --language "eng" \
             --manifest_filepath manifests/timit/NFA_${sub}_manifest_with_text.json \
             --output_dir alignments/TIMIT_CtcFA_${sub}
+    done
+fi
+
+
+if [ $stage -le 6 ]; then
+    log "Stage 6: Generate whisperx TextGrid files"
+
+    # for sub in DEV TEST TRAIN;do
+    for sub in DEV;do
+        python scripts/whisperx_aligner_cli.py --language "en" \
+            --manifest_filepath manifests/timit/NFA_${sub}_manifest_with_text.json \
+            --output_dir alignments/TIMIT_WhisperxCtcFA_${sub}
     done
 fi
 
@@ -129,3 +141,4 @@ fi
 alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_MFA_DEV
 alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_NFA_DEV
 alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_CtcFA_DEV
+alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_WhisperxCtcFA_DEV

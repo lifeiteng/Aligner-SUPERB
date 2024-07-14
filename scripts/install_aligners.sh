@@ -26,3 +26,6 @@ git reset --hard eb8a750b9c91c3d2e2fda29264c82e252d84c3df
 pip install -e .
 cd -
 
+
+## whisperx
+pip install git+https://github.com/m-bain/whisperx.git
