@@ -64,14 +64,17 @@ class UtteranceBoundaryError(Metric):
         for key in target.keys():
             tg_target, tg_align = target[key], align[key]
 
-            # TODO(Feiteng): use segments instead of words
-
             # start
             for word_target, word_align in zip(tg_target.getTier("words"), tg_align.getTier("words")):
                 if not word_target.label:
                     raise ValueError(f"Empty word: {word_target}")
                 assert word_target.label == word_align.label, f"Word mismatch: {word_target.label}, {word_align.label}"
-                total_ube_start.append(int(word_target.start < word_align.start))
+                if "segments" in list(tg_align.tierNames):
+                    align_start = tg_align.getTier("segments").entries[0].start
+                else:
+                    align_start = word_align.start
+
+                total_ube_start.append(int(word_target.start < align_start))
                 break
 
             # end
@@ -79,7 +82,11 @@ class UtteranceBoundaryError(Metric):
                 if not word_target.label:  # skip empty
                     raise ValueError(f"Empty word: {word_target}")
                 assert word_target.label == word_align.label, f"Word mismatch: {word_target.label}, {word_align.label}"
-                total_ube_end.append(int(word_target.end > word_align.end))
+                if "segments" in list(tg_align.tierNames):
+                    align_end = tg_align.getTier("segments").entries[-1].end
+                else:
+                    align_end = word_align.end
+                total_ube_end.append(int(word_target.end > align_end))
                 break
 
         avg_ube_start = sum(total_ube_start) / len(total_ube_start)
