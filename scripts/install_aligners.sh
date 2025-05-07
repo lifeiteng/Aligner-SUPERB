@@ -48,6 +48,6 @@ conda create -n whisperx python=3.9 -y
 conda activate whisperx
 
 pip install git+https://github.com/m-bain/whisperx.git
-pip install lhotse praatio
+pip install lhotse praatio num2words
 pip install .
 conda deactivate
