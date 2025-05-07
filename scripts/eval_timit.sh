@@ -188,5 +188,3 @@ if [ $stage -le 8 ]; then
     alignersuperb metrics -t alignments/TIMIT_TARGET_DEV alignments/TIMIT_LhotseMMSForcedAligner_DEV
     conda deactivate
 fi
-
-log "All stages completed"
